@@ -603,8 +603,8 @@ public class mySnowGlobeWin extends myDispWindow {
 		}		
 	}
 	@Override
-	protected void processTrajIndiv(myDrawnNoteTraj drawnNoteTraj){
-		pa.outStr2Scr("Process traj in sphere ui");
+	protected void processTrajIndiv(myDrawnSmplTraj drawnTraj){
+		pa.outStr2Scr("Process traj in snow globe");
 		//traj processing
 	}
 	@Override

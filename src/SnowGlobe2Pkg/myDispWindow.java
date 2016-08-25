@@ -157,24 +157,27 @@ public abstract class myDispWindow {
 	}
 	
 	//calculate button length
-	private static final float ltrLen = 6.2f;private static final int btnStep = 10;
-	private float calcBtnLength(String tStr, String fStr){return btnStep * ((int)((PApplet.max(tStr.length(),fStr.length())  + 4) * ltrLen)/btnStep);}
+	private static final float ltrLen = 6.2f;private static final int btnStep = 8;
+	private float calcBtnLength(String tStr, String fStr){return btnStep * ((int)((PApplet.max(tStr.length(),fStr.length()) + 4) * ltrLen)/btnStep);}
 	//set up child class button rectangles TODO
 	//yDisp is displacement for button to be drawn
 	protected void initPrivBtnRects(float yDisp, int numBtns){
 		//pa.outStr2Scr("initPrivBtnRects in :"+ name + "st value for uiClkCoords[3]");
 		privFlagBtns = new float[numBtns][];
 		this.uiClkCoords[3] += yOff;
-		float locX = 0;
+		float oldBtnLen = 0;
 		for(int i=0; i<numBtns; ++i){						//clickable button regions - as rect,so x,y,w,h - need to be in terms of sidebar menu 
-			float btnLen = calcBtnLength(truePrivFlagNames[i],falsePrivFlagNames[i]);//pa.max(truePrivFlagNames[i].length(),falsePrivFlagNames[i].length()) * 7.2f;
-			privFlagBtns[i]= new float[] {(float)(uiClkCoords[0]-xOff) + locX, (float) uiClkCoords[3], btnLen, yOff };
-			if((i % 2 == 0) && (btnLen < (.45f * pa.menuWidth ))){//for next button being odd - check button length
-				locX = btnLen;
-			} else{
-				locX = 0;
-				this.uiClkCoords[3] += yOff;	
-			}			
+			float btnLen = calcBtnLength(truePrivFlagNames[i],falsePrivFlagNames[i]);
+			if(i%2 == 0){//even btns always on a new line
+				privFlagBtns[i]= new float[] {(float)(uiClkCoords[0]-xOff), (float) uiClkCoords[3], btnLen, yOff };
+			} else {	//odd button
+				if ((btnLen + oldBtnLen) > .95f * pa.menuWidth){	//odd button, but too long -> new line		
+					this.uiClkCoords[3] += yOff;
+				}
+				privFlagBtns[i]= new float[] {(float)(uiClkCoords[0]-xOff), (float) uiClkCoords[3], btnLen, yOff };
+				this.uiClkCoords[3] += yOff;//always new line after odd button
+			}
+			oldBtnLen = btnLen;
 		};
 		this.uiClkCoords[3] += yOff;
 		initPrivFlagColors();

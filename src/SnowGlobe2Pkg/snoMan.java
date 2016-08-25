@@ -44,7 +44,6 @@ public class snoMan{
 	public myVectorf heading;			//facing direction of this snoman - keep normalized
 	
 	public float fwdRollAmt,			//amount the body of the snowman "rolls" forward as he is moving 
-				smWidth,                 //width of snowman's butt
 				smHeight,                //height of snowman
 				headRad,                //radius of snowman's head
 				hRad60,
@@ -88,7 +87,7 @@ public class snoMan{
 	public static final int[] animCkFlgs = new int[]{isWalking, isThrowing, snowBallInFlight};
 	public static final double[] animPrgChk = new double[]{0.01,0.01, 0.0};
 	 
-   	public snoMan(SnowGlobeWin _p, mySnowGlobeWin _win, myVectorf _location, float _smHeight, float _smWidth, float _theta, int _ID){
+   	public snoMan(SnowGlobeWin _p, mySnowGlobeWin _win, myVectorf _location, float _smHeight, float _theta, int _ID){
   		pa = _p;
   		win = _win;
   		ID = _ID;
@@ -101,8 +100,8 @@ public class snoMan{
   		initFlags();  		
   		setFlag(isWalking, (Math.random() > .2) ? true : false);      //some snowmen might not be walking at first
   		initClickAra();
+  		//use to scale rendered object
   		smHeight = _smHeight;
-  		smWidth = _smWidth;
   				
 		location = new myVectorf(_location.x, _location.y, _location.z);
 		heading = new myVectorf(pa.cos(_theta),pa.sin(_theta),0);//ccw orientation - as _theta increases, snowman turns ccw
@@ -121,6 +120,7 @@ public class snoMan{
 	    mySnoballLocation = new myVectorf(0,0,0);
 	    //initialize snowman snowball color
 	    initSnowBall();
+	    //snoManSqRad = (((location.x)*(location.x)) + ((location.y)*(location.y)));
 	    initSnoMan();
   		//buildFaces();
   	}//snoman constructor (0)  
@@ -140,9 +140,9 @@ public class snoMan{
 	    smH80 = smHeight/80.0f;
 	    smHO4 = smHeight/4.0f;
 	    torsoRadS = 3*smH16;             //torso radius (in z direction (shorter)
-	    torsoRadL = smWidth/3.0f;                 //long torso radius (in xy plane)
+	    torsoRadL = smHeight/6.0f;                 //long torso radius (in xy plane)
 	    buttRadS = 3*smH16;              //butt radius (in z direction (shorter)
-	    buttRadL = smWidth/2.0f;                  //long butt radius (in xy plane)
+	    buttRadL = smHeight/4.0f;                  //long butt radius (in xy plane)
 	    
 	    hrCPO7 = headRad * pa.cPiO7;
 	    hrSPO7 = headRad * pa.sPiO7;
@@ -301,7 +301,7 @@ public class snoMan{
   	//from double click, double animClick, double sbClick
   	//call rotateAndDrawMe(clickAra[i], clickAra[i+pa.snoMenCount], clickAra[i+(2*pa.snoMenCount)]);
   	public void simulation(){
-  		//update vector from center of snowman to center of globe
+  		//update vector from center of snowman on ground to center of globe on ground
   		meToCtr.set(win.globe.center,location);// (((location.x) * (location.x)) + ((location.y) * (location.y)));
   		//determines how much the snowman moves forward and how much his body segments "roll" while he's walking
   		float moveRotAmt = (float)(pa.groundRadius/100.0f)*(1-pa.abs(pa.sin(2*clickAra[clMoveIDX] + pa.piO2)));
@@ -673,12 +673,7 @@ public class snoMan{
     	pa.popMatrix();
   	}//drawThrow method  
   
-	public void setColorTopHatBand(){pa.setColorVals(myHatColor, 200, 200, 200, 30.0f);}
-	
-	private void setClrShinyBlack(PShape sh){		setShColorVals(sh, 0,0,0, 255, 255, 255, 255,300.0f);}
-	private void setClrFlatWhite(PShape sh){		setShColorVals(sh,255,255,255, 255,55, 55, 55, 1.0f);}
-	private void setClrFlatBlack2(PShape sh){		setShColorVals(sh, 0, 0, 0, 255, 25, 25, 25, 3.0f);}
-
+	private void setColorTopHatBand(){pa.setColorVals(myHatColor, 200, 200, 200, 30.0f);}	
 	private void setShColorVals(PShape sh, int f_r, int f_g, int f_b, int f_a, 
 		  					int sp_r, int sp_g, int sp_b, 
 		  					float si){		  
@@ -693,149 +688,71 @@ public class snoMan{
 	* @return info about this snowman
 	*/
 	public String toString(){
-	  String info = "height : " + smHeight + " width : " + smWidth + " location in world : " + location;
-	  info += "\n\tbuttWidth : " + smWidth;   
+	  String info = "height : " + smHeight + " width : " + smHeight/2.0f + " location in world : " + location;
+	 
 	  return info;
 	}
 
-}//class snoMan
-//private static float[] eyebrowTilt = new float[]{0, pa.PI/4.0f, -pa.PI/4.0f};//need an angle for each mood
-////build #feelings # of faces into pshape array, to minimize rendering time
-//public void buildFaces(){
-//	faces = new PShape[numMoods];
-//	for(int i=0;i<numMoods;++i){
-//		faces[i] = pa.createShape(pa.GROUP);
-//		faces[i].addChild(buildEyes());
-//		faces[i].addChild(buildEyebrows(eyebrowTilt[i]));
-//	faces[i].addChild(buildNose());
-//		faces[i].addChild(buildMouth());
-////		faces[i].addChild(buildPipe());
-////		faces[i].addChild(buildTopHat());
-//	}
-//}
-//
-///**
-//*  2 eyes made out of coal. anthracite, to be specific.  nice, shiny anthracite
-//*/
-//private PShape buildEyes(){
-//	PShape sh = pa.createShape(pa.GROUP);
-//sh.addChild(buildEye(1.0f));
-//sh.addChild(buildEye(-1.0f));
-//return sh;
-//}
-//private PShape buildEye(float mult){
-//	PShape sh = pa.createShape(pa.SPHERE,smH80);
-//	pa.setClrSetShinyBlack(sh);
-//	sh.translate(hrCPO7, hrSPO7*pa.cPiO6, mult*hrSPO7*pa.cPiO6);  		
-//	return sh;
-//}
-//
-//// carrot nose
-//
-//private PShape buildNose(){
-//	PShape sh = pa.createShape(pa.SPHERE,headRad);
-//	sh.translate(headRad,0,0);
-//	sh.rotate(-pa.piO2,0,1, 0);
-//	sh.scale(0.1f ,0.1f,0.6f);
-//	//set color to orange for nose
-//	pa.setClrSetCustomShiny(sh, new int[]{225,120,0,255}, 4.0f);
-//	return sh;
-//}//drawNose
-//
-///**
-//*  expressive eyebrows
-//*  feelings : 0 - none, 1 - mad, -1 - happy
-//*  rotAmt is how much to rotate based on feelings
-//*/
-//public PShape buildEyebrows(float rotAmt){
-//	PShape sh = pa.createShape(pa.GROUP);
-//	sh.addChild(buildEyebrow(rotAmt, 1.0f));
-//	sh.addChild(buildEyebrow(rotAmt, -1.0f));
-//	return sh;
-//}//drawEyebrows
-//
-//private PShape buildEyebrow(float rotAmt, float mult){
-//PShape sh = pa.createShape(pa.GROUP);
-//	pa.setClrSetFlatBlack2(sh);  			
-//	sh.translate((1.1f*hrCPO6), 
-//			(headRad * pa.scPiO6 + headRad/10.0f),
-//			(mult*headRad * pa.scPiO6) - hRadQtr);
-//	sh.translate(0, 0, hRadQtr);
-//	sh.rotate(mult*rotAmt+pa.HALF_PI, 1,0,0);
-//	sh.translate(0, 0, -hRadQtr);
-//	sh.addChild(pa.buildCylinder(hRad60,hRad60,hRadHalf,4,false,false, 4, new myVectorf()));
-//	
-////	//draw eye brows
-////	pa.translate((1.1f*hrCPO6), 
-////					(headRad * pa.scPiO6) - hRadQtr, 
-////					(headRad * pa.scPiO6 + headRad/10.0));
-////	pa.translate(0, hRadQtr, 0);
-////	pa.rotate(rotAmt, 1,0,0);
-////	pa.translate(0, -hRadQtr, 0);
-////	pa.drawCylinder(hRad60,hRad60,hRadHalf,4,false,false);
-////
-////	pa.translate((1.1f*hrCPO6), 
-////				(-1*headRad * pa.scPiO6) - hRadQtr, 
-////				(headRad * pa.scPiO6 + headRad/10.0));
-////	pa.translate(0, hRadQtr, 0);
-////	pa.rotate(-rotAmt, 1,0,0);
-////	pa.translate(0, -hRadQtr, 0);
-////	pa.drawCylinder(hRad60,hRad60,hRadHalf,4,false,false);   
-//	
-//return sh;    	
-//}//buildEyebrow
-///**
-//*  an expressive mouth, holding a pa.PIpe
-//*  feelings : 0 - none, 1 - mad, -1 - happy
-//*/
-//public PShape buildMouth(){
-//	PShape sh = pa.createShape(pa.SPHERE,smH80);
-//sh.translate(hrCPO6,(-headRad * pa.sPiO6* pa.cPiO12),(headRad* pa.sPiO12));
-//return sh;  
-//}//buildMouth
-//
-///**
-//*  what's a snoman without his tophat?
-//*/  
-//public PShape buildTopHat(){//(bottom,top,height, drawbottom, drawtop)
-//	PShape shRes = pa.createShape(pa.GROUP); 
-//	pa.setClrFlatBlack(shRes);
-//	shRes.rotate((hatAngle),1,0,0);
-//	shRes.translate(0,(headRad * .8f),0);
-////main hat part
-//shRes.addChild(pa.buildCylinder(3*headRad/5.0f,4*headRad/5.0f, 1.2f*headRad, 16, false,true, 6, new myVectorf()));  
-////brim
-//shRes.addChild(pa.buildCylinder(headRad*1.0f,headRad*1.2f,.2f, 16,true, true,6, new myVectorf()));  
-////band around hat - random color
-//shRes.translate(0,(0.1f*headRad),0);
-//
-//setColorTopHatBand(shRes);
-////band
-//shRes.addChild(pa.buildCylinder(3.5f*headRad/5.0f, 3.3f*headRad/5.0f,headRad/4.0f, 16, false, false,6, new myVectorf()));  
-//
-//	return shRes;
-//}//drawtophat for this snowman
-//
-//
-////corncob pipe
-//public PShape buildPipe(){
-//	PShape shRes = pa.createShape(pa.GROUP);  		
-//	pa.setClrSetCustomShiny(shRes, pa.pipeClr, 5.0f);
-//	//PShape sh = pa.createShape();
-//	shRes.translate(hrCPO6,
-//			(-hrSPO6* pa.cPiO12),
-//			(headRad* pa.sPiO12));
-//	shRes.rotate((3*pa.piO2),0,1,0);
-//	shRes.rotate((-pa.piO6),1,0,0);
-//	shRes.addChild(pa.buildCylinder(headRad/90.0f,headRad/90.0f,headRad/2.0f,3,false,false, 5, new myVectorf()));  //pipeestem
-//	shRes.translate(0,0,(headRad/2.0f));
-//	shRes.rotate((pa.piO2),1,0,0);
-//	shRes.addChild(pa.buildCylinder(headRad/10.0f,headRad/10.0f,headRad/5.0f,7,true,true,5, new myVectorf()));  //pipehead
-//	shRes.translate(0,(headRad/4.95f),0);
-//	shRes.rotate((pa.piO2),1,0,0);	
-//	PShape sh = pa.createShape(pa.ELLIPSE, new float[]{0,0,(headRad/5.0f),(headRad/5.0f)});
-//pa.setClrFlatBlack2(sh);  
-//shRes.addChild(sh);
-//return shRes;
-//}//drawpa.PIpe 	
-//
+}//snoman
+
+//class holds pre-rendered version of snowman held as pshapes, to speed up drawing
+class SMRndrdObj{
+	protected static SnowGlobeWin pa;						//papplet
+	protected static mySnowGlobeWin win;					//display window
+	
+	public static final float smHeight = 100.0f;
+	
+	private float hRadHalf,hRadQtr, smH16, smHO7,smH80, smHO4,
+	  hrCPO6, hrSPO6,hrSCPO6, hrCPO7, hrSPO7,
+		headRad,                //radius of snowman's head
+		hRad60,
+		torsoRadS,               //torso radius (in z direction (shorter)
+		torsoRadL,               //long torso radius (in xy plane)
+		buttRadS,                //butt radius (in z direction (shorter)
+		buttRadL;                //long butt radius (in xy plane)
+
+	private myVectorf headCenter,            //center of snowman's head - snow man is built along z axis
+	  torsoCenter,           //center of snowman's head - snow man is built along z axis
+	  buttCenter;           //center of snowman's butt - snow man is built along z axis
+
+	
+	
+	public SMRndrdObj(SnowGlobeWin _p, mySnowGlobeWin _win){
+		pa=_p;win=_win;
+		
+		
+	}
+	
+   	private void initSnoMan(){
+	    //build everything off of smHeight
+	    //snoManSqRad = (((location.x)*(location.x)) + ((location.z)*(location.z)));
+	    //dimensions of snowman's body
+	    headRad = smHeight/9.0f;                  //radius of snowman's head
+	    hRad60 = headRad/60.0f;
+	    hRadHalf = .5f * headRad;
+	    hRadQtr = .5f * hRadHalf;
+	    smH16 = smHeight/16.0f;
+	    smHO7  = smHeight/7.0f;
+	    smH80 = smHeight/80.0f;
+	    smHO4 = smHeight/4.0f;
+	    torsoRadS = 3*smH16;             //torso radius (in z direction (shorter)
+	    torsoRadL = smHeight/6.0f;                 //long torso radius (in xy plane)
+	    buttRadS = 3*smH16;              //butt radius (in z direction (shorter)
+	    buttRadL = smHeight/4.0f;                  //long butt radius (in xy plane)
+	    
+	    hrCPO7 = headRad * pa.cPiO7;
+	    hrSPO7 = headRad * pa.sPiO7;
+	    
+	    hrCPO6 = headRad * pa.cPiO6;
+	    hrSPO6 = headRad * pa.sPiO6;
+	    hrSCPO6 = headRad * pa.scPiO6;   		
+  		buttCenter = new myVectorf(0,0, 2.9*smH16);
+  		torsoCenter = new myVectorf(0,0, 8.1*smH16);
+  		headCenter = new myVectorf(0,0,12.1*smH16);    
+  	}
+   	
+	
+	
+	
+
+}

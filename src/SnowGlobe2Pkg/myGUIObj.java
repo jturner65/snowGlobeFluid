@@ -11,8 +11,7 @@ public class myGUIObj {
 	public myVector start, end;				//x,y coords of start corner, end corner (z==0) for clickable region
 	public String name, dispText;
 
-	public double val;
-	public final double minVal, maxVal;
+	private double val, minVal, maxVal;
 	//public boolean treatAsInt;
 	
 	public boolean[] uiFlags;
@@ -58,9 +57,11 @@ public class myGUIObj {
 	}
 	
 	public double getVal(){return val;}	
+	public void setNewMax(double _newval){	maxVal = _newval;val = ((val >= minVal)&&(val<=maxVal)) ? val : (val < minVal) ? minVal : maxVal;		}
+	public void setNewMin(double _newval){	minVal = _newval;val = ((val >= minVal)&&(val<=maxVal)) ? val : (val < minVal) ? minVal : maxVal;		}
 	
 	public double setVal(double _newVal){
-		val = ((_newVal > minVal)&&(_newVal<maxVal)) ? _newVal : (_newVal < minVal) ? minVal : maxVal;		
+		val = ((_newVal >= minVal)&&(_newVal<=maxVal)) ? _newVal : (_newVal < minVal) ? minVal : maxVal;		
 		return val;
 	}	
 	

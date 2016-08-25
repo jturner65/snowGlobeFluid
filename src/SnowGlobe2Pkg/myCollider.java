@@ -21,9 +21,7 @@ public abstract class myCollider {
 		NoCol = 0,					//0 if no collision, 
 		BrchCol = 1,				//1 if collision via breach - push back to legal position, address vel and frc concerns
 		NextCol = 2,				//2 if collision next timestep  
-		CntctCol = 3;				//3 if need to counter force due to contact - within some epsilon of part radius distance from collider surface
-
-		
+		CntctCol = 3;				//3 if need to counter force due to contact - within some epsilon of part radius distance from collider surface		
 	
 	public static final double partRad = .04;
 	

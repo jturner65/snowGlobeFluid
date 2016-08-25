@@ -199,7 +199,7 @@ public class mySnowGlobeWin extends myDispWindow {
 			smHeight = (float) (pa.avgSMHeight + ((Math.random()*(pa.avgSMHeight/2.0)) - (pa.avgSMHeight/4.0)));
 			smCenter.set(.7*((Math.random()*( SnowGlobeWin.groundRadius*2)) -  SnowGlobeWin.groundRadius),.7*((Math.random()*( SnowGlobeWin.groundRadius*2)) -  SnowGlobeWin.groundRadius),0);                   //set center of this snowman's butt
 			float thet = pa.random(PConstants.TWO_PI);
-			players[i] = new snoMan(pa,this, smCenter, smHeight, smHeight/2.0f, thet, i);
+			players[i] = new snoMan(pa,this, smCenter, smHeight, thet, i);
 			snoballs[i] = new snoBall(pa,this,i);
 		}//for int i - creates array of snowmen
 		

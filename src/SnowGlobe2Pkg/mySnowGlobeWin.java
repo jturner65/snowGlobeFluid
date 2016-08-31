@@ -117,20 +117,17 @@ public class mySnowGlobeWin extends myDispWindow {
 	
 	//initialize all snowglobe-specific variables
 	public void initAllSnowGlobe(){
-		//initialize the array of snomen
-	
+		//initialize the array of snomen	
 		shakeFrcVec = new myVector();		//direction being shaken
 		shakeDenseVecAra = new ArrayList<myPoint>();		//location for density to be increased
 		globe = new snoGlobe(pa,this, pa.globeCtr);
-		initSnowmen();
-		
+		initSnowmen();		
 		buildDefForces("snowglobe",-4.0);
 		buildDefColliders();
-
 		initSnowflakes();
-
 		initPresents();
 	}//init snomen
+	
 	private void initPresents(){
 		presents = new stackPresents[maxNumStacks];		
 		//initialize stacks of presents
@@ -201,8 +198,7 @@ public class mySnowGlobeWin extends myDispWindow {
 			float thet = pa.random(PConstants.TWO_PI);
 			players[i] = new snoMan(pa,this, smCenter, smHeight, thet, i);
 			snoballs[i] = new snoBall(pa,this,i);
-		}//for int i - creates array of snowmen
-		
+		}//for int i - creates array of snowmen		
 	}	
 	
 	//random position within snowglobe - z is vertical
@@ -223,7 +219,8 @@ public class mySnowGlobeWin extends myDispWindow {
 	@Override
 	//set flag values and execute special functionality for this sequencer
 	public void setPrivFlags(int idx, boolean val){
-		privFlags[idx] = val;
+		int flIDX = idx/32, mask = 1<<(idx%32);
+		privFlags[flIDX] = (val ?  privFlags[flIDX] | mask : privFlags[flIDX] & ~mask);
 		switch(idx){
 			case showBndsIDX : {
 				pa.pr("showBndsIDX set : " + val);
@@ -357,11 +354,11 @@ public class mySnowGlobeWin extends myDispWindow {
 		drawLights(animTimeMod*.5f , snomanFocus);                   //make lighting
 		pa.pushMatrix();pa.pushStyle();
 		pa.noStroke();
-		if(privFlags[showSnowFlksIDX]){drawSnowFlakes(); }		
+		if(getPrivFlags(showSnowFlksIDX)){drawSnowFlakes(); }		
 		if(pa.flags[pa.debugMode]){		globe.drawSnowGlobeDebug();} 
 		else {							
-			if(privFlags[showSnoMen]){drawSnoMen();}
-			if(privFlags[showPrsntsIDX]){drawPresents();}//for the stacks that are more than the count of the snomen	
+			if(getPrivFlags(showSnoMen)){drawSnoMen();}
+			if(getPrivFlags(showPrsntsIDX)){drawPresents();}//for the stacks that are more than the count of the snomen	
 			globe.drawSnowGlobe();
 		}
 		pa.popStyle();pa.popMatrix();
@@ -376,13 +373,13 @@ public class mySnowGlobeWin extends myDispWindow {
 		//apply forces
 		applyForcesToSystem();
 		
-		if (privFlags[isShakeVelIDX]) {
+		if (getPrivFlags(isShakeVelIDX)) {
 			setPrivFlags(isShakeVelIDX, false);
-			//addShakeForceToFluid(fMult, msdrgVal0, msdrgVal1); 		privFlags[this.isShakenIDX] = false;			//setting false keeps force from compounding
+			//addShakeForceToFluid(fMult, msdrgVal0, msdrgVal1); 		getPrivFlags(this.isShakenIDX] = false;			//setting false keeps force from compounding
 			globe.myFluidBoxAddForce(shakeFrcVec);
 			shakeFrcVec.set(0,0,0);
 		}
-		if(privFlags[isShakeDenseIDX]){
+		if(getPrivFlags(isShakeDenseIDX)){
 			setPrivFlags(isShakeDenseIDX, false);
 			for (myPoint vec : shakeDenseVecAra){				
 				globe.myFluidBoxAddDens( addDenseAmt, vec);
@@ -625,7 +622,7 @@ public class mySnowGlobeWin extends myDispWindow {
 		//pa.outStr2Scr("sphere ui click in world : " + mseClckInWorld.toStrBrf());
 		if(mseBtn == 1){			
 			shakeDenseVecAra.add(new myPoint(mseClckInWorld)); //add to velocity
-			if(!privFlags[isShakeDenseIDX]) {setPrivFlags(isShakeDenseIDX, true);}		
+			if(!getPrivFlags(isShakeDenseIDX)) {setPrivFlags(isShakeDenseIDX, true);}		
 			res = true;
 		}//add to density at click location
 		return res;
@@ -639,11 +636,11 @@ public class mySnowGlobeWin extends myDispWindow {
 		if(mseBtn == 0){	
 			myVector tmp = myVector._mult(mseDragInWorld, shakeForceMult); //add to velocity
 			if(tmp.magn > pa.epsVal){shakeFrcVec = tmp;}
-			if(!privFlags[isShakeVelIDX]){setPrivFlags(isShakeVelIDX, true);}
+			if(!getPrivFlags(isShakeVelIDX)){setPrivFlags(isShakeVelIDX, true);}
 			res = true;
 		} else if(mseBtn == 1) {					 
 			shakeDenseVecAra.add(mouseClickIn3D); //add to velocity
-			if(!privFlags[isShakeDenseIDX]){setPrivFlags(isShakeDenseIDX, true);}
+			if(!getPrivFlags(isShakeDenseIDX)){setPrivFlags(isShakeDenseIDX, true);}
 			res = true;
 		}//add to density
 		return res;

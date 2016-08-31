@@ -7,7 +7,6 @@ import processing.core.*;
 //abstract class to hold base code for a menu/display window (2D for gui, etc), to handle displaying and controlling the window, and calling the implementing class for the specifics
 public abstract class myDispWindow {
 	protected static SnowGlobeWin pa;
-
 	public static int winCnt = 0;
 	public int ID;	
 	public String name, winText;	
@@ -24,8 +23,7 @@ public abstract class myDispWindow {
 	public int lastAnimTime, stAnimTime;
 	
 	public int pFlagIdx;					//the flags idx in the PApplet that controls this window - use -1 for none	
-	public boolean[] dispFlags;
-	
+	public boolean[] dispFlags;	
 	public static final int 
 				showIDX 			= 0,			//whether or not to show this window
 				is3DWin 			= 1,
@@ -46,7 +44,7 @@ public abstract class myDispWindow {
 	public static final int numDispFlags = 13;
 	
 	//private window-specific flags and UI components (buttons)
-	public boolean[] privFlags;
+	public int[] privFlags;
 	public String[] truePrivFlagNames; //needs to be in order of flags	
 	public String[] falsePrivFlagNames;//needs to be in order of flags
 	
@@ -99,8 +97,7 @@ public abstract class myDispWindow {
 	
 	//to control how much is shown in the window - if measures extend off the screen
 	public myScrollBars[] scbrs;
-	
-	//individual instrument note output - replaces scrollNoteOut
+
 	
 	public myDispWindow(SnowGlobeWin _p, String _n, int _flagIdx, int[] fc,  int[] sc, float[] rd, float[] rdClosed, String _winTxt, boolean _canDrawTraj) {
 		pa=_p;
@@ -143,7 +140,7 @@ public abstract class myDispWindow {
 	public void initFlags(){dispFlags = new boolean[numDispFlags];for(int i =0; i<numDispFlags;++i){dispFlags[i]=false;}}		
 	
 	//child-class flag init
-	protected void initPrivFlags(int numPrivFlags){privFlags = new boolean[numPrivFlags];for(int i=0;i<numPrivFlags;++i){privFlags[i] = false;}}
+	protected void initPrivFlags(int numPrivFlags){privFlags = new int[1 + numPrivFlags/32]; for(int i = 0; i<numPrivFlags; ++i){setPrivFlags(i,false);}}
 	//set up initial colors for sim specific flags for display
 	protected void initPrivFlagColors(){
 		privFlagColors = new int[truePrivFlagNames.length][3];
@@ -157,8 +154,8 @@ public abstract class myDispWindow {
 	}
 	
 	//calculate button length
-	private static final float ltrLen = 6.2f;private static final int btnStep = 8;
-	private float calcBtnLength(String tStr, String fStr){return btnStep * ((int)((PApplet.max(tStr.length(),fStr.length()) + 4) * ltrLen)/btnStep);}
+	private static final float ltrLen = 6.0f;private static final int btnStep = 6;
+	private float calcBtnLength(String tStr, String fStr){return btnStep * (int)(((PApplet.max(tStr.length(),fStr.length())+4) * ltrLen)/btnStep);}
 	//set up child class button rectangles TODO
 	//yDisp is displacement for button to be drawn
 	protected void initPrivBtnRects(float yDisp, int numBtns){
@@ -167,14 +164,15 @@ public abstract class myDispWindow {
 		this.uiClkCoords[3] += yOff;
 		float oldBtnLen = 0;
 		for(int i=0; i<numBtns; ++i){						//clickable button regions - as rect,so x,y,w,h - need to be in terms of sidebar menu 
-			float btnLen = calcBtnLength(truePrivFlagNames[i],falsePrivFlagNames[i]);
+			float btnLen = calcBtnLength(truePrivFlagNames[i].trim(),falsePrivFlagNames[i].trim());
 			if(i%2 == 0){//even btns always on a new line
 				privFlagBtns[i]= new float[] {(float)(uiClkCoords[0]-xOff), (float) uiClkCoords[3], btnLen, yOff };
 			} else {	//odd button
 				if ((btnLen + oldBtnLen) > .95f * pa.menuWidth){	//odd button, but too long -> new line		
 					this.uiClkCoords[3] += yOff;
+					oldBtnLen = 0;
 				}
-				privFlagBtns[i]= new float[] {(float)(uiClkCoords[0]-xOff), (float) uiClkCoords[3], btnLen, yOff };
+				privFlagBtns[i]= new float[] {(float)(uiClkCoords[0]-xOff)+oldBtnLen, (float) uiClkCoords[3], btnLen, yOff };
 				this.uiClkCoords[3] += yOff;//always new line after odd button
 			}
 			oldBtnLen = btnLen;
@@ -184,6 +182,9 @@ public abstract class myDispWindow {
 	}//initPrivBtnRects
 	
 	public abstract void setPrivFlags(int idx, boolean val);
+	public boolean getPrivFlags(int idx){int bitLoc = 1<<(idx%32);return (privFlags[idx/32] & bitLoc) == bitLoc;}	
+	public boolean getAllPrivFlags(int [] idxs){int bitLoc; for(int idx =0;idx<idxs.length;++idx){bitLoc = 1<<(idx%32);if ((privFlags[idx/32] & bitLoc) != bitLoc){return false;}} return true;}
+	public boolean getAnyPrivFlags(int [] idxs){int bitLoc; for(int idx =0;idx<idxs.length;++idx){bitLoc = 1<<(idx%32);if ((privFlags[idx/32] & bitLoc) == bitLoc){return true;}} return false;}
 	
 	public void initThisWin(boolean _canDrawTraj, boolean _trajIsFlat){
 		initTmpTrajStuff(_trajIsFlat);	
@@ -403,7 +404,7 @@ public abstract class myDispWindow {
 		pa.pushMatrix();pa.pushStyle();	
 		pa.setColorValFill(SnowGlobeWin.gui_Black);
 		for(int i =0; i<privModFlgIdxs.length; ++i){//prlFlagRects dispBttnAtLoc(String txt, float[] loc, int[] clrAra)
-			if(privFlags[privModFlgIdxs[i]] ){									dispBttnAtLoc(truePrivFlagNames[i],privFlagBtns[i],privFlagColors[i]);			}
+			if(getPrivFlags(privModFlgIdxs[i]) ){									dispBttnAtLoc(truePrivFlagNames[i],privFlagBtns[i],privFlagColors[i]);			}
 			else {	if(truePrivFlagNames[i].equals(falsePrivFlagNames[i])) {	dispBttnAtLoc(truePrivFlagNames[i],privFlagBtns[i],new int[]{180,180,180});}	
 					else {														dispBttnAtLoc(falsePrivFlagNames[i],privFlagBtns[i],new int[]{0,255-privFlagColors[i][1],255-privFlagColors[i][2]});}		
 			}
@@ -604,7 +605,7 @@ public abstract class myDispWindow {
 			mod = msePtInRect(mx, my, privFlagBtns[i]); 
 			//pa.outStr2Scr("Handle mouse click in window : "+ ID + " : (" + mouseX+","+mouseY+") : "+mod + ": btn rect : "+privFlagBtns[i][0]+","+privFlagBtns[i][1]+","+privFlagBtns[i][2]+","+privFlagBtns[i][3]);
 			if (mod){ 
-				setPrivFlags(privModFlgIdxs[i],!privFlags[privModFlgIdxs[i]]); 
+				setPrivFlags(privModFlgIdxs[i],!getPrivFlags(privModFlgIdxs[i])); 
 				return mod;
 			}			
 		}
@@ -624,6 +625,7 @@ public abstract class myDispWindow {
 		if((dispFlags[showIDX])&& (msePtInUIRect(mouseX, mouseY))){//in clickable region for UI interaction
 			for(int j=0; j<guiObjs.length; ++j){if(guiObjs[j].checkIn(mouseX, mouseY)){	msOvrObj=j;return true;	}}
 		}			
+		if(hndlMouseMoveIndiv(mouseX, mouseY, mouseClickIn3D)){return true;}
 		msOvrObj = -1;
 		return false;
 	}//handleMouseClick
@@ -649,7 +651,7 @@ public abstract class myDispWindow {
 	//vector for drag in 3D
 	public boolean handleMouseDrag(int mouseX, int mouseY,int pmouseX, int pmouseY, myPoint mouseClickIn3D, myVector mseDragInWorld, int mseBtn){
 		boolean mod = false;
-		if(!dispFlags[showIDX]){return false;}
+		if(!dispFlags[showIDX]){return mod;}
 		//any generic dragging stuff - need flag to determine if trajectory is being entered
 		if(msClkObj!=-1){	guiObjs[msClkObj].modVal((mouseX-pmouseX)+(mouseY-pmouseY)*-5.0f); return true;}		
 		if(dispFlags[drawingTraj]){ 		//if drawing trajectory has started, then process it
@@ -793,21 +795,20 @@ public abstract class myDispWindow {
 	}
 	public void addTrajToSubScreen(int subScrKey, String newTrajKey){
 		modTrajStructs(subScrKey, newTrajKey,false);
-		
 		addTrajToScrIndiv(subScrKey, newTrajKey);
 	}
 	
 	public void delSubScreenToWin(int delWinKey){
 		modTrajStructs(delWinKey, "",true);
-		
 		delSScrToWinIndiv(delWinKey);
 	}
 	public void delTrajToSubScreen(int subScrKey, String newTrajKey){
 		modTrajStructs(subScrKey, newTrajKey,true);
-		
-		
 		delTrajToScrIndiv(subScrKey,newTrajKey);
 	}
+	
+	//updates values in UI with programatic changes 
+	protected boolean setWinToUIVals(int UIidx, double val){return val == guiObjs[UIidx].setVal(val);}
 	
 	protected abstract void initDrwnTrajIndiv();
 	protected abstract void addSScrToWinIndiv(int newWinKey);
@@ -831,7 +832,7 @@ public abstract class myDispWindow {
 	
 	//ui init routines
 	protected abstract void setupGUIObjsAras();	
-	protected abstract void setUIWinVals(int UIidx);
+	protected abstract void setUIWinVals(int UIidx);		//set prog values from ui
 	protected abstract String getUIListValStr(int UIidx, int validx);
 	protected abstract void processTrajIndiv(myDrawnSmplTraj drawnTraj);
 	
@@ -998,7 +999,8 @@ class mySideBarMenu extends myDispWindow{
 	//set flag values and execute special functionality for this sequencer
 	@Override
 	public void setPrivFlags(int idx, boolean val){
-		privFlags[idx] = val;
+		int flIDX = idx/32, mask = 1<<(idx%32);
+		privFlags[flIDX] = (val ?  privFlags[flIDX] | mask : privFlags[flIDX] & ~mask);
 		//switch(idx){}
 	}
 

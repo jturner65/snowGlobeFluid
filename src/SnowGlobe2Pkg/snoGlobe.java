@@ -282,9 +282,9 @@ public class snoGlobe {
 	}//drawVelocity
 	
 	public void drawSnowGlobeDebug(){
-		if(win.privFlags[mySnowGlobeWin.showBndsIDX]){drawBndsVecs();}
-		if(win.privFlags[mySnowGlobeWin.showDensIDX]){drawDensity();}
-		if(win.privFlags[mySnowGlobeWin.showVelIDX]){drawVelocity();}
+		if(win.getPrivFlags(mySnowGlobeWin.showBndsIDX)){drawBndsVecs();}
+		if(win.getPrivFlags(mySnowGlobeWin.showDensIDX)){drawDensity();}
+		if(win.getPrivFlags(mySnowGlobeWin.showVelIDX)){drawVelocity();}
 	}
 	
 	public void drawSnowGlobe(){

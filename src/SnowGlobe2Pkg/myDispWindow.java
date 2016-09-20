@@ -39,9 +39,9 @@ public abstract class myDispWindow {
 				trajPointsAreFlat 	= 10,			//trajectory drawn points are flat (for pick, to prevent weird casting collisions
 				
 				procMouseMove 		= 11,
-				mouseSnapMove		= 12;			//mouse locations for this window are discrete multiples - if so implement inherited function to calculate mouse snap location
-
-	public static final int numDispFlags = 13;
+				mouseSnapMove		= 12,			//mouse locations for this window are discrete multiples - if so implement inherited function to calculate mouse snap location
+				uiObjMod 			= 13;
+	public static final int numDispFlags = 14;
 	
 	//private window-specific flags and UI components (buttons)
 	public int[] privFlags;
@@ -635,7 +635,18 @@ public abstract class myDispWindow {
 	public boolean handleMouseClick(int mouseX, int mouseY, myPoint mouseClickIn3D, int mseBtn){
 		boolean mod = false;
 		if((dispFlags[showIDX])&& (msePtInUIRect(mouseX, mouseY))){//in clickable region for UI interaction
-			for(int j=0; j<guiObjs.length; ++j){if(guiObjs[j].checkIn(mouseX, mouseY)){	msClkObj=j;return true;	}}
+			for(int j=0; j<guiObjs.length; ++j){
+				if(guiObjs[j].checkIn(mouseX, mouseY)){	
+					if(pa.flags[pa.shiftKeyPressed]){//allows for click-mod
+						int mult = mseBtn * -2 + 1;	//+1 for left, -1 for right btn						
+						guiObjs[j].modVal(mult * pa.clickValModMult());
+						dispFlags[uiObjMod] = true;
+					} else {										//has drag mod
+						msClkObj=j;
+					}
+					return true;	
+				}
+			}
 		}			
 		if(dispFlags[closeable]){mod = checkClsBox(mouseX, mouseY);}							//check if trying to close or open the window via click, if possible
 		if(!dispFlags[showIDX]){return mod;}
@@ -653,7 +664,7 @@ public abstract class myDispWindow {
 		boolean mod = false;
 		if(!dispFlags[showIDX]){return mod;}
 		//any generic dragging stuff - need flag to determine if trajectory is being entered
-		if(msClkObj!=-1){	guiObjs[msClkObj].modVal((mouseX-pmouseX)+(mouseY-pmouseY)*-5.0f); return true;}		
+		if(msClkObj!=-1){	guiObjs[msClkObj].modVal((mouseX-pmouseX)+(mouseY-pmouseY)*-5.0f);dispFlags[uiObjMod] = true; return true;}		
 		if(dispFlags[drawingTraj]){ 		//if drawing trajectory has started, then process it
 			//pa.outStr2Scr("drawing traj");
 			myPoint pt =  getMsePoint(mouseX, mouseY);
@@ -676,8 +687,9 @@ public abstract class myDispWindow {
 	
 	public void handleMouseRelease(){
 		if(!dispFlags[showIDX]){return;}
-		if(msClkObj != -1){
+		if(dispFlags[uiObjMod]){
 			for(int i=0;i<guiObjs.length;++i){if(guiObjs[i].uiFlags[myGUIObj.usedByWinsIDX]){setUIWinVals(i);}}		
+			dispFlags[uiObjMod] = false;
 			msClkObj = -1;	
 		}//some object was clicked - pass the values out to all windows
 		if (dispFlags[editingTraj]){    this.tmpDrawnTraj.endEditObj();}    //this process assigns tmpDrawnTraj to owning window's traj array

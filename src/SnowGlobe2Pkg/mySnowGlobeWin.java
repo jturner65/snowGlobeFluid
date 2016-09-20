@@ -492,7 +492,8 @@ public class mySnowGlobeWin extends myDispWindow {
 	}//applyForcesToSystem
 	
 	//call after fluid and collision forces
-	public void invokeSolverDerivEval() {for (int idx = 0; idx < snowFlakes.length; ++idx) {snowFlakes[idx].intAndAdvance(deltaT);}}
+	public void invokeSolverDerivEval() {//myParticle.updateCurPtrs();
+		for (int idx = 0; idx < snowFlakes.length; ++idx) {snowFlakes[idx].integAndAdvance(deltaT);}}
 	
 	private void stepSpotLight(){
 		if(spotLightChange % 50 == 0){                    //change spotlight after a little while

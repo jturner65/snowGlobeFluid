@@ -13,7 +13,7 @@ public class myParticle {
 	public myVector[] aPosition, aVelocity, aForceAcc, aOldPos, aOldVel, aOldForceAcc;
 
 	public int curIDX;
-	
+	public static int curNext, curPrev;
 	public int colVal;						//collision check value
 	
 	public static final int szAcc = 2;		//size of accumulator arrays
@@ -29,7 +29,8 @@ public class myParticle {
 	
 	private void init(myVector _pos, myVector _velocity, myVector _forceAcc, SnowGlobeWin.SolverType _solv) {
 		curIDX = 0;									//cycling ptr to idx in arrays of current sim values
-		
+		curNext = 1; 
+		curPrev = 0;
 		aPosition = new myVector[szAcc];
 		aVelocity = new myVector[szAcc];
 		aForceAcc = new myVector[szAcc];
@@ -63,9 +64,15 @@ public class myParticle {
 		mass = _m;
 		origMass = _m;
 	}
-	public void applyForce(myVector _force) {aForceAcc[curIDX]._add(_force);}//applyforce
 	
-	public void intAndAdvance(double deltaT){		
+//	public static void updateCurPtrs(){
+//		curNext = (curIDX + 1) % szAcc; 
+//		curPrev = 0;
+//		
+//	}
+	
+	public void applyForce(myVector _force) {aForceAcc[curIDX]._add(_force);}//applyforce
+	public void integAndAdvance(double deltaT){		
 		myVector[] tSt = new myVector[]{ aPosition[curIDX], aVelocity[curIDX], aOldPos[curIDX], aOldVel[curIDX]};	
 		myVector[] tStDot = new myVector[]{ tSt[1],myVector._div(aForceAcc[curIDX],mass),tSt[3], myVector._div(aOldForceAcc[curIDX],mass)};
 		myVector[] tNSt = solver.Integrate(deltaT, tSt, tStDot);
@@ -94,7 +101,7 @@ public class myParticle {
 }//myParticle
 
 class mySnowFlake extends myParticle{
-	protected SnowGlobeWin pa;
+	protected static SnowGlobeWin pa;
 	protected static mySnowGlobeWin win;
 	public int[] color, origColor;	
 

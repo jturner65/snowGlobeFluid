@@ -688,7 +688,7 @@ public abstract class myDispWindow {
 	public void handleMouseRelease(){
 		if(!dispFlags[showIDX]){return;}
 		if(dispFlags[uiObjMod]){
-			for(int i=0;i<guiObjs.length;++i){if(guiObjs[i].uiFlags[myGUIObj.usedByWinsIDX]){setUIWinVals(i);}}		
+			for(int i=0;i<guiObjs.length;++i){if(guiObjs[i].getFlags(myGUIObj.usedByWinsIDX)){setUIWinVals(i);}}
 			dispFlags[uiObjMod] = false;
 			msClkObj = -1;	
 		}//some object was clicked - pass the values out to all windows

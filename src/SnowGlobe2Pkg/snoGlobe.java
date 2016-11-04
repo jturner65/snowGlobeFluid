@@ -38,12 +38,13 @@ public class snoGlobe {
 		h0sd = new double[] { 1.0 / (2.0* s2i[0]), 1.0 / (2.0* s2i[1]), 1.0 / (2.0* s2i[2])},
 		hSd = new double []{ .5 * s2i[0], .5* s2i[1], .5* s2i[2]};
 	
-	public double diff = .0006,			//set via UI
+	public double diff = .0006,			//TODO set via UI
 		visc = 0.0001, 
-		deltaT = .01,
+		deltaT = .03,
 		radSq = snowGlobRad * snowGlobRad;			//radSq used for collision if sphere - is square of radius which is 10 in original fluid sim
 
-
+	public static final int intIters = 15;			//iterations of GS solver
+	
 	public myVector cellSz,						//size of cell in each dimension - defaults to 1
 			startLoc,					//location to translate to for start of arrays, to render velocity vectors
 			ctrSzHalfNC;				//precalculated (center - sz*halfNumCell)/sz for force query for particles
@@ -83,8 +84,8 @@ public class snoGlobe {
 	}//ctor
 	
 	private void initFluidSim(myVectorf _ctr){
-		diff = .0006;//control by UI
-		visc = 0.0001; 
+		diff = 0; //TODO //control by UI
+		visc = 0;// 0.0001; 
 		deltaT = .01;
 
 		sphereBnds = new TreeMap<Integer, myFluidBndObj>();
@@ -298,15 +299,15 @@ public class snoGlobe {
 		//add motion sources into arrays (motion added into V*0/oldDensity)
 		//addAllSources();
 		tmpDAra = Vx; Vx=Vx0;Vx0=tmpDAra;tmpDAra = Vy; Vy=Vy0;Vy0=tmpDAra;tmpDAra = Vz; Vz=Vz0;Vz0=tmpDAra;
-		diffuseSphere(Vx, Vx0, Vy, Vy0, Vz, Vz0, visc, 8);
-		projectSphere(Vx, Vy, Vz, Vx0, Vy0, 8);
+		diffuseSphere(Vx, Vx0, Vy, Vy0, Vz, Vz0, visc, intIters);
+		projectSphere(Vx, Vy, Vz, Vx0, Vy0, intIters);
 		
 		tmpDAra = Vx; Vx=Vx0;Vx0=tmpDAra;tmpDAra = Vy; Vy=Vy0;Vy0=tmpDAra;tmpDAra = Vz; Vz=Vz0;Vz0=tmpDAra;
 		advectSphere(Vx, Vx0, Vy, Vy0, Vz, Vz0);
-		projectSphere(Vx, Vy, Vz, Vx0, Vy0, 8);
+		projectSphere(Vx, Vy, Vz, Vx0, Vy0, intIters);
 		
 		tmpDAra = density; density=oldDensity;oldDensity=tmpDAra;
-		diffSphDens(density, oldDensity, diff, 8, numCellX);
+		diffSphDens(density, oldDensity, diff, intIters, numCellX);
 		tmpDAra = density; density=oldDensity;oldDensity=tmpDAra;
 		advSphDens(density, oldDensity, Vx, Vy, Vz);
 		//vort confine here

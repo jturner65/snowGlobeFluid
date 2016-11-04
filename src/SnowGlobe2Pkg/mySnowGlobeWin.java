@@ -3,7 +3,6 @@ package SnowGlobe2Pkg;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import SnowGlobe2Pkg.SnowGlobeWin.CollisionType;
 import processing.core.*;
 
 public class mySnowGlobeWin extends myDispWindow {
@@ -87,12 +86,12 @@ public class mySnowGlobeWin extends myDispWindow {
 	//initialize all private-flag based UI buttons here - called by base class
 	public void initAllPrivBtns(){
 		truePrivFlagNames = new String[]{								//needs to be in order of flags
-				"Showing Fluid Bounds","Showing Fluid Densities","Showing Fluid Velocities","Showing Ground Collider",
-				"Showing Snowflakes","Showing Presents","Showing Snowmen" 
+				"Hide Fluid Bounds","Hide Fluid Densities","Hide Fluid Velocities","Hide Ground Collider",
+				"Hide Snowflakes","Hide Presents","Hide Snowmen" 
 		};
 		falsePrivFlagNames = new String[]{			//needs to be in order of flags
-				"Hiding Fluid Bounds","Hiding Fluid Densities","Hiding Fluid Velocities","Hiding Ground Collider",
-				"Hiding Snowflakes","Hiding Presents","Hiding Snowmen"
+				"Show Fluid Bounds","Show Fluid Densities","Show Fluid Velocities","Show Ground Collider",
+				"Show Snowflakes","Show Presents","Show Snowmen"
 		};
 		privModFlgIdxs = new int[]{showBndsIDX,showDensIDX,showVelIDX,showGndColIDX,showSnowFlksIDX,showPrsntsIDX,showSnoMen};
 		numClickBools = privModFlgIdxs.length;	

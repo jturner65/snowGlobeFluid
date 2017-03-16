@@ -406,6 +406,9 @@ import processing.opengl.*;
 //////////////////////////////////////////
 /// graphics and base functionality utilities and variables
 //////////////////////////////////////////
+	
+	//size of printed text (default is 12)
+	public static final int txtSz = 10;
 	//constant path strings for different file types
 	public static final String fileDelim = "\\";	
 	//display-related size variables
@@ -626,6 +629,7 @@ import processing.opengl.*;
 		float camZ = ((height/2.0f) / tan(PI/6.0f))*this.camZScaleMult;
 		camVals = new float[]{width/2.0f, height/2.0f, camZ, width/2.0f, height/2.0f, 0, 0, 1, 0};
 		perspVals = new float[]{PI/3.0f, width/height, camZ*.1f, camZ*10.0f};
+		textSize(txtSz);
 		showInfo = true;
 		outStr2Scr("Current sketchPath " + sketchPath());
 		

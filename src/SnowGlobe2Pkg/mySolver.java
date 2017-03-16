@@ -101,13 +101,17 @@ class intVerlet extends myIntegrator{
 	}
 }//intVerlet
 
+//////////////
+///  all RK integrators assume constant force through timestep, which affects accuracy when using constraint and repulsive/attractive forces
+////////////////
+
 class intRK3 extends myIntegrator{
 	public intRK3(){super();}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
 
-		//myVector[] tmpVecState1 = integrateExpE(deltaT, _state, _stateDot);
-		myVector[] tmpVecK1 = new myVector []{_state[1],_stateDot[1]};
+		myVector[] tmpVecState1 = integrateExpE(deltaT, _state, _stateDot);
+		myVector[] tmpVecK1 = new myVector []{tmpVecState1[1],_stateDot[1]};
 
 		myVector[] tmpVecState2 = integrateExpE((deltaT *.5), _state, tmpVecK1);
 		myVector[]  tmpVecK2 = new myVector []{	tmpVecState2[1],tmpVecK1[1]	};	//move resultant velocity into xdot position
@@ -129,7 +133,8 @@ class intRK4 extends myIntegrator{
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
 
 		//vector<Eigen::Vector3d> tmpVecState1 = IntegrateExp_EPerPart(deltaT, _state, _stateDot);
-		myVector[] tmpVecK1 = new myVector []{_state[1],_stateDot[1]};
+		myVector[] tmpVecState1 = integrateExpE(deltaT, _state, _stateDot);
+		myVector[] tmpVecK1 = new myVector []{tmpVecState1[1],_stateDot[1]};
 
 		myVector[] tmpVecState2 = integrateExpE((deltaT *.5), _state, tmpVecK1);
 		myVector[]  tmpVecK2 = new myVector []{	tmpVecState2[1],tmpVecK1[1]	};	//move resultant velocity into xdot position
@@ -154,7 +159,9 @@ class intGenRK4 extends myIntegrator{
 	public intGenRK4(double _l){super();lambda = _l; lam2 = lambda/2.0; invLam = 1.0/lambda;}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
-		myVector[] tmpVecK1 = new myVector []{_state[1],_stateDot[1]};
+		
+		myVector[] tmpVecState1 = integrateExpE(deltaT, _state, _stateDot);
+		myVector[] tmpVecK1 = new myVector []{tmpVecState1[1],_stateDot[1]};
 
 		myVector[] tmpVecState2 = integrateExpE((deltaT *.5), _state, tmpVecK1);
 		myVector[]  tmpVecK2 = new myVector []{	tmpVecState2[1],tmpVecK1[1]	};	//move resultant velocity into xdot position

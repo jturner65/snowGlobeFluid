@@ -2,8 +2,6 @@ package SnowGlobe2Pkg;
 
 import java.util.*;
 
-import SnowGlobe2Pkg.SnowGlobeWin.SolverType;
-
 public class myParticle {
 	public final int ID;
 	public static int IDgen = 0;
@@ -106,7 +104,7 @@ class mySnowFlake extends myParticle{
 	public int[] color, origColor;	
 
 	public mySnowFlake(SnowGlobeWin _pa, mySnowGlobeWin _win, myVector _iPos, myVector _iVel, myVector _iFrc,
-			SolverType _styp) {
+			SnowGlobeWin.SolverType _styp) {
 		super(_iPos, _iVel, _iFrc, _styp);
 		pa = _pa;
 		win = _win;

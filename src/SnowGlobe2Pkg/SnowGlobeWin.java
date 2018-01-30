@@ -86,8 +86,6 @@ import processing.opengl.*;
 
 	
 	public static final double timeIncr = .05;               //amount time increments per cycle of draws
-//	public static final int numStacks = 23;                  //number of present stacks
-//	public static final int snoMenCount = 20;                //number of snowmen - min of 3
 	public static final float snowFlakeRad = groundRadius * .004f, tenSFRads = 10*snowFlakeRad;
 	
 	public static final float gSqRad = groundRadius*.95f * groundRadius *.95f,

@@ -363,13 +363,13 @@ public class mySnowGlobeWin extends myDispWindow {
 		pa.popStyle();pa.popMatrix();
 		pa.noLights();
 		//pa.turnOnLights();		
-		if(pa.flags[pa.runSim]){executeSnowGlobe();}				//need to build better mechanism to be draw-driven instead of 1-shot for play
+		if(pa.flags[pa.runSim]){executeSnowGlobe();}				
 		//pa.pr("win draw");
 		pa.popStyle();pa.popMatrix();
 	}
 	
 	public void executeSnowGlobe(){//runtime simulation stuff 
-		//apply forces
+		//apply default forces (gravity, damping)
 		applyForcesToSystem();
 		
 		if (getPrivFlags(isShakeVelIDX)) {

@@ -46,6 +46,7 @@ public abstract class myCollider {
 }//myCollider
 
 class cylinderCollider extends myCollider{
+	//TODO NOT FINISHED YET
 	public myVector center,			//actual location of this collider in the world
 		dims,						//x,z : radii along ciruclar axes, around orient axis. y : height along orient axis above center
 		orient;						//should be normalized vector pointing in direction of cylinder axis		
@@ -56,7 +57,9 @@ class cylinderCollider extends myCollider{
 	public cylinderCollider(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, myVectorf _drawLoc, myVector _ctr, myVector _dims, myVector _orient,  boolean _intRefl) {
 		super(_p, _win, _n, _drawLoc, CollisionType.CYLINDER);
 		intRefl = _intRefl;
-		center = _ctr; dims = _dims; orient = _orient;
+		center = _ctr; 
+		dims = _dims; //x and z are radii in x and z dir
+		orient = _orient;
 		findMinMaxDims();
 	}
 
@@ -81,25 +84,25 @@ class cylinderCollider extends myCollider{
 				partVelPoint = myVector._add(myVector._mult(part.aVelocity[part.curIDX],deltaT), multPartFAcc),
 				partMovePoint = myVector._add(partPos, partVelPoint);	//potential movement point for next turn of movement, to see if next turn of movement will hit wall
 		//TODO fix this to handle cylinder
-		myVector partMvCtr = new myVector(center,partMovePoint), partLocCtr = new myVector(center,partPos);
-			if (((partMvCtr.magn < (minMaxDims[0] + partRad)) && (!intRefl)) ||					//current location is breach 
-			((partMvCtr.magn > (minMaxDims[1] - partRad)) && (intRefl))) {
-				if (((partLocCtr.magn < (minMaxDims[0] + partRad)) && (!intRefl)) ||					//current location is breach 
-					((partLocCtr.magn > (minMaxDims[1] - partRad)) && (intRefl))) {
-					return BrchCol;
-				}
-				else {
-					return NextCol;
-				}
-			}
-		//find point on surface of sphere inline with center and partlocation
-		myVector sNormPartP = getCylinderNormal(partPos);				//normal through current point and center, in direction of collision surface
-		myVector partSpherePnt =  myVector._add(center, myVector._mult(sNormPartP,-snoGlobe.snowGlobRad));			//point on ellipsoid surface colinear with center and particle move point
-		double dist2wall = myVector._sub(partSpherePnt, partPos).magn, distFromWallChk = dist2wall - partVelPoint.magn;
-		if (distFromWallChk > pa.epsVal) { return NoCol; }
-		else if (distFromWallChk > -pa.epsVal) { return CntctCol; }
-		else { return BrchCol; }
-
+//		myVector partMvCtr = new myVector(center,partMovePoint), partLocCtr = new myVector(center,partPos);
+//			if (((partMvCtr.magn < (minMaxDims[0] + partRad)) && (!intRefl)) ||					//current location is breach 
+//			((partMvCtr.magn > (minMaxDims[1] - partRad)) && (intRefl))) {
+//				if (((partLocCtr.magn < (minMaxDims[0] + partRad)) && (!intRefl)) ||					//current location is breach 
+//					((partLocCtr.magn > (minMaxDims[1] - partRad)) && (intRefl))) {
+//					return BrchCol;
+//				}
+//				else {
+//					return NextCol;
+//				}
+//			}
+//		//find point on surface of sphere inline with center and partlocation
+//		myVector sNormPartP = getCylinderNormal(partPos);				//normal through current point and center, in direction of collision surface
+//		myVector partSpherePnt =  myVector._add(center, myVector._mult(sNormPartP,-snoGlobe.snowGlobRad));			//point on ellipsoid surface colinear with center and particle move point
+//		double dist2wall = myVector._sub(partSpherePnt, partPos).magn, distFromWallChk = dist2wall - partVelPoint.magn;
+//		if (distFromWallChk > pa.epsVal) { return NoCol; }
+//		else if (distFromWallChk > -pa.epsVal) { return CntctCol; }
+//		else { return BrchCol; }
+		return NoCol; 
 	}//checkCollision	
 	
 	public myVector getCylinderNormal(myVector _loc) {//get normal at a particular location - no matter where inside or outside of sphere, normal built from this point and center will point in appropriate dir
@@ -128,6 +131,7 @@ class cylinderCollider extends myCollider{
 		}//if about to hit collider
 
 		else if (res == 1) {//1 if collision via breach, 2 if collision next timestep, 3 if need to counter force due to contact
+			//TODO FIX FOR CYLINDER
 			double distFromBreach = myVector._sub(partPos, center).magn - (snoGlobe.snowGlobRad - partRad);
 			//cout<<"dist from breach "<<distFromBreach<<endl;
 			if (((intRefl) && ((distFromBreach) < 0)) || ((!intRefl) && ((distFromBreach) > 0))) {}//cout<<"breach error, not on wrong side of sphere"<<endl;}
@@ -159,10 +163,6 @@ class sphereCollider extends myCollider{
 
 
 	public boolean  intRefl;			//internal reflections? for sphere (collide on inside)
-//	myCollider(string _n, const Eigen::Vector3d& _dr, const Eigen::Vector3d& _ctr, const Eigen::Vector3d& _rad, bool _inRefl) :							//sphere collider
-//		ID(++ID_gen), name(_n), colType(SPHERE), drawLoc(_dr), center(_ctr), radius(_rad), minMaxRadius(2), planeNormal(), verts(), peq(4), intRefl(_inRefl), Krest(1) {
-//		initCollider();
-//	}
 
 	public sphereCollider(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, myVectorf _drawLoc, myVector _ctr, myVector _rad, boolean _intRefl) {
 		super(_p, _win, _n, _drawLoc, CollisionType.SPHERE);
@@ -213,10 +213,6 @@ class sphereCollider extends myCollider{
 		return NoCol;
 
 //		//calc t so that normalized partLocVec collides with sphere/ellipsoid wall.  if t > len(partLocVec) then no collision
-//		
-//		
-//		
-//		
 //		
 //		myVector partPos = part.aPosition[part.curIDX],				
 //				partLocCtr = new myVector(center,partPos);

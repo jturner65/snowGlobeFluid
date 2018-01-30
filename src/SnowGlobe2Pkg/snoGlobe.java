@@ -14,7 +14,7 @@ public class snoGlobe {
 	//object for floor - render to shape 1 time at init, and then just render shape
 	public static PShape globeBase;
 	//# of cells per dimension
-	public static final int snowGlobRad = (int) (SnowGlobeWin.groundRadius*1.05);
+	public static final float snowGlobRad =  (SnowGlobeWin.groundRadius*1.05f);
 	//need to change numDim function - globe radius is much bigger than 10
 	public static final int numInDim = 40;
 	public static final double cellDim = 1.1 * snowGlobRad / (.5*numInDim);//make bigger than snowglobe rad so bounds are found

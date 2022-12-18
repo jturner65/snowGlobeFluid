@@ -433,9 +433,9 @@ public class mySnowGlobeWin extends myDispWindow {
 
 	//default forces that always affect particles
 	public void buildDefForces(String name, double kdrag) {
-		myForce gravity = new mySclrForce(pa, this, name + "Force_Grav", SnowGlobeWin.gravVec);
+		myForce gravity = new mySclrForce(pa, name + "Force_Grav", SnowGlobeWin.gravVec);
 		if (kdrag != 0) {
-			dfltForces = new myForce[]{gravity, new myVecForce(pa, this, name + "Fluid_Drag", kdrag)};
+			dfltForces = new myForce[]{gravity, new myVecForce(pa, name + "Fluid_Drag", kdrag)};
 		} else {
 			dfltForces = new myForce[]{gravity};			
 		}
@@ -455,14 +455,14 @@ public class mySnowGlobeWin extends myDispWindow {
 				new myVector(-vertCoord, -vertCoord, 0),
 				new myVector(vertCoord, -vertCoord, 0)};
 		//ground
-		colliders[0] = new planeCollider(pa, this, name, 
+		colliders[0] = new planeCollider(pa,  name, 
 				new myVectorf(globe.center), 													//draw location - doesn't  matter - should draw collider through passed points
 				vertLocs); 												//verticies on plane - can be any values so long as height is correct
 		colliders[0].Krest = .00001;
 		colliders[0].muFrict = 0;        //friction force
 			
 		//buildGlobeCollider(double krest, double muFrict, double rad, double distFromGlb) 
-		colliders[1] = new sphereCollider(pa, this,"SnowGlobePart2", 
+		colliders[1] = new sphereCollider(pa, "SnowGlobePart2", 
 				new myVectorf(globe.center),								//drawLoc
 				new myVector(globe.center),				//center
 				new myVector(snoGlobe.snowGlobRad, snoGlobe.snowGlobRad, snoGlobe.snowGlobRad), 								//radius

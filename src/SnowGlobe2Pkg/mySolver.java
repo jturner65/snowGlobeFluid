@@ -7,14 +7,14 @@ public class mySolver {
 	public static int ID_gen = 0;
 	public int ID;
 	public SnowGlobeWin.SolverType intType;
-	private myIntegrator intgrt;
+	private baseIntegrator intgrt;
 	
 	public mySolver(SnowGlobeWin.SolverType _type) {
 		ID = ID_gen++;
 		intType = _type;
 		intgrt = buildIntegrator(2);
 	}
-	private myIntegrator buildIntegrator(double _lambda){
+	private baseIntegrator buildIntegrator(double _lambda){
 		switch (intType){
 		case GROUND 	: {return new intGndTrth();}
 		case EXP_E 		: {return new intExpEuler();}
@@ -31,9 +31,9 @@ public class mySolver {
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot){	return intgrt.Integrate(deltaT, _state, _stateDot);}	
 }//mySolver class
 
-abstract class myIntegrator{
+abstract class baseIntegrator{
 	public static myVector gravVec = new myVector(SnowGlobeWin.gravVec);
-	public myIntegrator(){}
+	public baseIntegrator(){}
 	protected myVector[] integrateExpE(double deltaT, myVector[] _state, myVector[] _stateDot){
 		myVector[] tmpVec = new myVector[2];
 		tmpVec[0] = myVector._add(_state[0], myVector._mult(_stateDot[0],deltaT));
@@ -43,13 +43,13 @@ abstract class myIntegrator{
 	public abstract myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot);
 }
 
-class intgrtNone extends myIntegrator{
+class intgrtNone extends baseIntegrator{
 	public intgrtNone(){}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {return _state;}
 }//intgrtNone
 
-class intGndTrth extends myIntegrator{
+class intGndTrth extends baseIntegrator{
 	public intGndTrth(){}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
@@ -61,7 +61,7 @@ class intGndTrth extends myIntegrator{
 	}
 }//intGndTrth
 
-class intExpEuler extends myIntegrator{
+class intExpEuler extends baseIntegrator{
 	public intExpEuler(){super();}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
@@ -73,7 +73,7 @@ class intExpEuler extends myIntegrator{
 	}
 }//intExpEuler
 
-class intMidpoint extends myIntegrator{
+class intMidpoint extends baseIntegrator{
 	public intMidpoint(){super();}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
@@ -87,7 +87,7 @@ class intMidpoint extends myIntegrator{
 	}
 }//intMidpoint
 
-class intVerlet extends myIntegrator{
+class intVerlet extends baseIntegrator{
 	public static final double VERLET1mDAMP = .99999;          //1 minus some tiny damping term for verlet stability
 	public intVerlet(){super();}
 	@Override
@@ -105,7 +105,7 @@ class intVerlet extends myIntegrator{
 ///  all RK integrators assume constant force through timestep, which affects accuracy when using constraint and repulsive/attractive forces
 ////////////////
 
-class intRK3 extends myIntegrator{
+class intRK3 extends baseIntegrator{
 	public intRK3(){super();}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
@@ -127,7 +127,7 @@ class intRK3 extends myIntegrator{
 		return tmpVec;	}
 }//intRK3
 
-class intRK4 extends myIntegrator{
+class intRK4 extends baseIntegrator{
 	public intRK4(){super();}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
@@ -154,7 +154,7 @@ class intRK4 extends myIntegrator{
 	}
 }//intRK4
 
-class intGenRK4 extends myIntegrator{
+class intGenRK4 extends baseIntegrator{
 	private double lambda, lam2, invLam;
 	public intGenRK4(double _l){super();lambda = _l; lam2 = lambda/2.0; invLam = 1.0/lambda;}
 	@Override
@@ -191,7 +191,7 @@ class intGenRK4 extends myIntegrator{
 }//intGenRK4
 
 //not working properly - need to use conj grad-type solver - this is really semi-implicit
-class intImpEuler extends myIntegrator{
+class intImpEuler extends baseIntegrator{
 	public intImpEuler(){super();}
 	@Override
 	public myVector[] Integrate(double deltaT, myVector[] _state, myVector[] _stateDot) {
@@ -203,7 +203,7 @@ class intImpEuler extends myIntegrator{
 	}
 }//intImpEuler
 
-class intTrap extends myIntegrator{
+class intTrap extends baseIntegrator{
 	private double lambda;
 	public intTrap(){super();}
 	@Override

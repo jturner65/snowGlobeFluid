@@ -2,7 +2,6 @@ package SnowGlobe2Pkg;
 
 public abstract class myForce {
 	protected static SnowGlobeWin pa;
-	protected static mySnowGlobeWin win;
 	public static int ID_gen = 0;
 	public int ID;
 	public String name;
@@ -11,17 +10,16 @@ public abstract class myForce {
 	public myVector constVec;				//vector constant quantity, for use with gravity
 	public SnowGlobeWin.ForceType ftype;
 
-	public myForce(SnowGlobeWin _p,mySnowGlobeWin _win, String _n, double _k1, double _k2, myVector _constVec, SnowGlobeWin.ForceType _t){
-  		pa = _p; win=_win;
-		ID = ++ID_gen;
+	public myForce(SnowGlobeWin _p, String _n, double _k1, double _k2, myVector _constVec, SnowGlobeWin.ForceType _t){
+  		pa = _p; 		ID = ++ID_gen;
 		name = new String(_n);
 		constVal = _k1; 
 		constVal2 = _k2;
 		constVec = _constVec;		//torque-result force
 		ftype = _t;
 	}
-	public myForce(SnowGlobeWin _p,mySnowGlobeWin _win,String _n, double _k1, double _k2) {this(_p,_win, _n, _k1, _k2, new myVector(), SnowGlobeWin.ForceType.DAMPSPRING);}
-	public myForce(SnowGlobeWin _p,mySnowGlobeWin _win,String _n, double _k) {this(_p,_win, _n, _k * (_k>0 ? 1 : -1), 0, new myVector(), (_k>0) ? SnowGlobeWin.ForceType.REPL : SnowGlobeWin.ForceType.ATTR); ID = -1;}
+	public myForce(SnowGlobeWin _p,String _n, double _k1, double _k2) {this(_p,_n, _k1, _k2, new myVector(), SnowGlobeWin.ForceType.DAMPSPRING);}
+	public myForce(SnowGlobeWin _p,String _n, double _k) {this(_p,_n, _k * (_k>0 ? 1 : -1), 0, new myVector(), (_k>0) ? SnowGlobeWin.ForceType.REPL : SnowGlobeWin.ForceType.ATTR); ID = -1;}
 	
 	public abstract myVector[] calcForceOnParticle(myParticle _p1, myParticle _p2, double d);// {S_SCALAR,S_VECTOR, ATTR, SPRING};
 	@Override
@@ -30,7 +28,7 @@ public abstract class myForce {
 
 class mySclrForce extends myForce{
 	// "scalar" force here means we derive the force by a particle-dependent scalar value, in this case mass against gravity vec 
-	public mySclrForce(SnowGlobeWin _p,mySnowGlobeWin _win,String _n, myVector _G) { super(_p,_win,_n, 0 ,0, new myVector(_G), SnowGlobeWin.ForceType.S_SCALAR);}	//	
+	public mySclrForce(SnowGlobeWin _p,String _n, myVector _G) { super(_p,_n, 0 ,0, new myVector(_G), SnowGlobeWin.ForceType.S_SCALAR);}	//	
 
 	@Override
 	//array returns up to 2 forces, one on p1, one on p2
@@ -46,7 +44,7 @@ class mySclrForce extends myForce{
 
 class myVecForce extends myForce{
 	//vector here means we derive the force as a particle-dependent vector value, like velocity, against some scalar kd
-	public myVecForce(SnowGlobeWin _p,mySnowGlobeWin _win,String _n, double _k) { super(_p,_win,_n,_k,0, new myVector(), SnowGlobeWin.ForceType.S_VECTOR);}		//if drag, needs to be negative constant value	
+	public myVecForce(SnowGlobeWin _p,String _n, double _k) { super(_p,_n,_k,0, new myVector(), SnowGlobeWin.ForceType.S_VECTOR);}		//if drag, needs to be negative constant value	
 
 	@Override
 	public myVector[] calcForceOnParticle(myParticle _p1, myParticle _p2, double d) {
@@ -61,11 +59,11 @@ class myVecForce extends myForce{
 
 class my2bdyForce extends myForce{
 	//attractive/repulsive force
-	public my2bdyForce(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, double _k,  SnowGlobeWin.ForceType _t) {
-		super(_p,_win, _n, _k, 0, new myVector(), _t);
+	public my2bdyForce(SnowGlobeWin _p,  String _n, double _k,  SnowGlobeWin.ForceType _t) {
+		super(_p, _n, _k, 0, new myVector(), _t);
 	}
-	public my2bdyForce(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, double _k) {//passed k > 0 is repulsive force, k < 0 is attractive force
-		this(_p,_win, _n, Math.abs(_k), (_k>0) ? SnowGlobeWin.ForceType.REPL : SnowGlobeWin.ForceType.ATTR);
+	public my2bdyForce(SnowGlobeWin _p,  String _n, double _k) {//passed k > 0 is repulsive force, k < 0 is attractive force
+		this(_p, _n, Math.abs(_k), (_k>0) ? SnowGlobeWin.ForceType.REPL : SnowGlobeWin.ForceType.ATTR);
 	}
 	@Override
 	public myVector[] calcForceOnParticle(myParticle _p1, myParticle _p2, double d) {

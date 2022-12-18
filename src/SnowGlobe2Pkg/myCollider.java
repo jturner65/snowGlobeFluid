@@ -6,7 +6,6 @@ import SnowGlobe2Pkg.SnowGlobeWin.SolverType;
 
 public abstract class myCollider {
 	protected static SnowGlobeWin pa;
-	protected static mySnowGlobeWin win;
 	public static int ID_gen = 0;
 	public int ID;
 	public String name;
@@ -25,9 +24,8 @@ public abstract class myCollider {
 	
 	public static final double partRad = .04;
 	
-	public myCollider(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, myVectorf _drawLoc, SnowGlobeWin.CollisionType _colType) {
+	public myCollider(SnowGlobeWin _p, String _n, myVectorf _drawLoc, SnowGlobeWin.CollisionType _colType) {
  		pa = _p;
-  		win = _win;
   		ID = ID_gen++;
   		name = new String(_n);
   		drawLoc = _drawLoc;
@@ -54,8 +52,8 @@ class cylinderCollider extends myCollider{
 
 	public boolean  intRefl;			//internal reflections? for sphere or cylinder (collide on inside instead of outside)
 	
-	public cylinderCollider(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, myVectorf _drawLoc, myVector _ctr, myVector _dims, myVector _orient,  boolean _intRefl) {
-		super(_p, _win, _n, _drawLoc, CollisionType.CYLINDER);
+	public cylinderCollider(SnowGlobeWin _p, String _n, myVectorf _drawLoc, myVector _ctr, myVector _dims, myVector _orient,  boolean _intRefl) {
+		super(_p, _n, _drawLoc, CollisionType.CYLINDER);
 		intRefl = _intRefl;
 		center = _ctr; 
 		dims = _dims; //x and z are radii in x and z dir
@@ -164,8 +162,8 @@ class sphereCollider extends myCollider{
 
 	public boolean  intRefl;			//internal reflections? for sphere (collide on inside)
 
-	public sphereCollider(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, myVectorf _drawLoc, myVector _ctr, myVector _rad, boolean _intRefl) {
-		super(_p, _win, _n, _drawLoc, CollisionType.SPHERE);
+	public sphereCollider(SnowGlobeWin _p, String _n, myVectorf _drawLoc, myVector _ctr, myVector _rad, boolean _intRefl) {
+		super(_p, _n, _drawLoc, CollisionType.SPHERE);
 		intRefl = _intRefl;
 		center = _ctr; radius = _rad;
 		findMinMaxRadius();
@@ -295,8 +293,8 @@ class planeCollider extends myCollider{
 	public myVector[] verts;	//vertices of this object, if flat plane
 	public double[] peq;		//plane equation values
 	
-	public planeCollider(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, myVectorf _drawLoc, myVector[] _verts) {
-		super(_p, _win, _n, _drawLoc, CollisionType.FLAT);
+	public planeCollider(SnowGlobeWin _p, String _n, myVectorf _drawLoc, myVector[] _verts) {
+		super(_p, _n, _drawLoc, CollisionType.FLAT);
 		verts = _verts;
 		buildPlaneNorm();
 		findPlaneEQ();
@@ -426,12 +424,12 @@ class collisionEvent{
 //	//check if inside box of planes bounded by 8 verts - treat like 6 bounding planes 
 //	public planeCollider[] box;
 //
-//	public boxCollider(SnowGlobeWin _p, mySnowGlobeWin _win, String _n, myVectorf _drawLoc, myVector[] _verts) {
-//		super(_p, _win, _n, _drawLoc, CollisionType.BOX);
+//	public boxCollider(SnowGlobeWin _p, String _n, myVectorf _drawLoc, myVector[] _verts) {
+//		super(_p, _n, _drawLoc, CollisionType.BOX);
 //		box = new planeCollider[6];
 //		for(int i =0;  i<3;++i){//0->3, 1->4, 2->5 are parallel planes, idxs 0-3 are one plane, 4-7 are parallel plane
 //			//String _n, myVectorf _drawLoc, myVector[] _verts)
-//			box[i] = new planeCollider(_p, _win, _n+"Side_"+i+"a",);
+//			box[i] = new planeCollider(_p, _n+"Side_"+i+"a",);
 //		}
 //		// TODO Auto-generated constructor stub
 //	}
